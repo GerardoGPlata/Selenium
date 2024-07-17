@@ -1,68 +1,105 @@
+import json
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
-import tabulate as tb
+import pandas as pd
+import time
 
-# Initialize the Firefox driver (make sure you have geckodriver in your PATH)
+# Cargar la configuración desde el archivo JSON
+with open('config.json') as f:
+    config = json.load(f)
+
+# Inicializar el driver de Firefox
 driver = webdriver.Firefox()
 
-# Load the SIAAUTT login page
-driver.get("https://uttorreon.mx/")
-
-try:
-    # Wait for the email and password inputs to be present
+# Iniciar sesión
+def iniciar_sesion(driver, config):
+    driver.get(config['inicio_sesion']['url'])
     email_input = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "email"))
+        EC.presence_of_element_located((By.ID, config['inicio_sesion']['email_input_id']))
     )
     password_input = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "password"))
+        EC.presence_of_element_located((By.ID, config['inicio_sesion']['password_input_id']))
     )
     login_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable((By.XPATH, "//button[@type='submit']"))
+        EC.element_to_be_clickable((By.XPATH, config['inicio_sesion']['login_button_xpath']))
     )
-except TimeoutException:
-    print("Error: Some elements were not found on the page.")
-    driver.quit()
+    email_input.send_keys("20170056")  # Reemplaza con tu email/usuario real
+    password_input.send_keys("GAPG940611HCLLLR04")  # Reemplaza con tu contraseña real
+    login_button.click()
+    time.sleep(3)  # Esperar 3 segundos
+
+# Navegar a 'Mi Espacio'
+def navegar_a_mi_espacio(driver, config):
+    mi_espacio = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, config['navegacion']['mi_espacio_xpath']))
+    )
+    mi_espacio.click()
+    time.sleep(3)  # Esperar 3 segundos
+
+# Navegar a 'Finanzas'
+def navegar_a_finanzas(driver, config):
+    finanzas = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, config['navegacion']['finanzas_xpath']))
+    )
+    finanzas.click()
+    time.sleep(3)  # Esperar 3 segundos
+
+# Navegar a 'Mis Pagos'
+def navegar_a_mis_pagos(driver, config):
+    mis_pagos = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, config['navegacion']['mis_pagos_xpath']))
+    )
+    mis_pagos.click()
+    time.sleep(3)  # Esperar 3 segundos
+
+# Obtener la tabla de pagos
+def obtener_tabla_pagos(driver, config):
+    tabla_pagos = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.ID, config['tabla_pagos']['id']))
+    )
+    filas = tabla_pagos.find_elements(By.TAG_NAME, "tr")
+    datos = []
+    for fila in filas[1:]:  # Comenzar desde la segunda fila para omitir los encabezados
+        celdas = fila.find_elements(By.TAG_NAME, "td")
+        if celdas:
+            datos_fila = [celda.text.strip() for celda in celdas[:-1]]  # Excluir la última celda (Imprimir)
+            datos.append(datos_fila)
+    return datos
+
+# Main
+def main():
+    # Iniciar sesión
+    iniciar_sesion(driver, config)
     
-# Fill in the login credentials
-email_input.send_keys("20170056")  # Replace with your actual email/username
-password_input.send_keys("GAPG940611HCLLLR04")  # Replace with your actual password
+    # Navegar a 'Mi Espacio'
+    navegar_a_mi_espacio(driver, config)
+    
+    # Navegar a 'Finanzas'
+    navegar_a_finanzas(driver, config)
+    
+    # Navegar a 'Mis Pagos'
+    navegar_a_mis_pagos(driver, config)
+    
+    # Obtener la tabla de pagos
+    datos = obtener_tabla_pagos(driver, config)
+    
+    # Convertir los datos a un DataFrame de pandas
+    df = pd.DataFrame(datos, columns=config['tabla_pagos']['columnas'])
+    
+    # Formatear las columnas numéricas
+    df['Total'] = df['Total'].apply(lambda x: f"$ {float(x.replace('$', '').replace(',', '')):.2f}")
+    df['Pagado'] = df['Pagado'].apply(lambda x: f"$ {float(x.replace('$', '').replace(',', '')):.2f}")
+    
+    # Guardar en un archivo de Excel
+    excel_filename = "pagos.xlsx"
+    df.to_excel(excel_filename, index=False)
+    print(f"Los datos de pagos se han guardado en '{excel_filename}'.")
+    print("¡Listo!")
+    
+    # Cerrar el navegador al finalizar
+    driver.quit()
 
-# Click the login button
-login_button.click()
-
-# Wait for the page to load
-try:
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//a[contains(text(), 'Cerrar sesión')]"))
-    )
-    print("Login successful!")
-except TimeoutException:
-    print("Error: Login failed.")
-
-# Buscar el elemento <span class="fa fa-th"></span<span class="xn-text">Mi Espacio</span>
-mi_espacio = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.XPATH, "//span[@class='fa fa-th']"))
-)
-mi_espacio.click()
-
-# Buscar el elemento <span class="item-text">Finanzas</span>
-finanzas = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.XPATH, "//span[contains(text(), 'Finanzas')]"))
-)
-finanzas.click()
-
-
-# Buscar el elemento <span class="item-text">Mis Pagos</span>
-mis_pagos = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.XPATH, "//span[contains(text(), 'Mis Pagos')]"))
-)
-mis_pagos.click()
-
-# Buscar el elemento <button type="button" class="btn btn-default  dropdown-toggle" data-toggle="dropdown"><span class="page-size">10</span> <span class="caret"></span></button>
-dropdown = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.XPATH, "//button[@class='btn btn-default  dropdown-toggle']"))
-)
-dropdown.click()
+if __name__ == "__main__":
+    main()

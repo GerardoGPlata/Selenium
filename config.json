@@ -1,0 +1,25 @@
+{
+  "inicio_sesion": {
+    "url": "https://uttorreon.mx/",
+    "email_input_id": "email",
+    "password_input_id": "password",
+    "login_button_xpath": "//button[@type='submit']"
+  },
+  "navegacion": {
+    "mi_espacio_xpath": "//span[@class='fa fa-th']",
+    "finanzas_xpath": "//span[contains(text(), 'Finanzas')]",
+    "mis_pagos_xpath": "//span[contains(text(), 'Mis Pagos')]"
+  },
+  "tabla_pagos": {
+    "id": "Tabla",
+    "columnas": [
+      "Periodo",
+      "Folio Recibo",
+      "Concepto",
+      "Total",
+      "Pagado",
+      "Estado del Pago",
+      "Fecha de vencimiento"
+    ]
+  }
+}
