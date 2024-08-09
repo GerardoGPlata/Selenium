@@ -1,0 +1,40 @@
+{
+  "login": {
+    "url": "https://uttorreon.mx/",
+    "email_input_id": "email",
+    "password_input_id": "password",
+    "login_button_xpath": "//button[@type='submit']",
+    "email": "20170056",
+    "password": "GAPG940611HCLLLR04"
+  },
+  "navigation": [
+    {
+      "action": "click",
+      "selector": "//span[@class='fa fa-th']",
+      "description": "Navegar a 'Mi Espacio'"
+    },
+    {
+      "action": "click",
+      "selector": "//span[contains(text(), 'Finanzas')]",
+      "description": "Navegar a 'Finanzas'"
+    },
+    {
+      "action": "click",
+      "selector": "//span[contains(text(), 'Mis Pagos')]",
+      "description": "Navegar a 'Mis Pagos'"
+    }
+  ],
+  "data_extraction": {
+    "tabla_id": "Tabla",
+    "column_names": [
+      "Periodo",
+      "Folio Recibo",
+      "Concepto",
+      "Total",
+      "Pagado",
+      "Estado del Pago",
+      "Fecha de vencimiento"
+    ],
+    "output_file": "pagos.xlsx"
+  }
+}

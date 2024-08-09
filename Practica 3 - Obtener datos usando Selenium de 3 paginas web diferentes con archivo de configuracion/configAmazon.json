@@ -1,0 +1,64 @@
+{
+  "url": "https://www.amazon.com/",
+  "actions": [
+    {
+      "action": "open_page",
+      "url": "https://www.amazon.com/",
+      "description": "Abrir la página principal de Amazon"
+    },
+    {
+      "action": "input",
+      "selector_type": "id",
+      "selector_value": "twotabsearchtextbox",
+      "input_value": "logitech keyboard",
+      "description": "Buscar 'logitech keyboard' en el campo de búsqueda"
+    },
+    {
+      "action": "click",
+      "selector_type": "id",
+      "selector_value": "nav-search-submit-button",
+      "description": "Hacer clic en el botón de búsqueda"
+    },
+    {
+      "action": "wait",
+      "wait_time": 3,
+      "description": "Esperar 3 segundos para que se carguen los resultados"
+    },
+    {
+      "action": "extract",
+      "selector_type": "css_selector",
+      "selector_value": "div.s-main-slot.s-result-list.s-search-results.sg-row",
+      "description": "Obtener la lista de productos"
+    },
+    {
+      "action": "extract_all",
+      "selector_type": "xpath",
+      "selector_value": "//div[@data-component-type='s-search-result']",
+      "description": "Extraer todos los elementos de producto"
+    },
+    {
+      "action": "extract",
+      "selector_type": "css_selector",
+      "selector_value": "span.a-size-medium.a-color-base.a-text-normal",
+      "description": "Extraer el título del producto"
+    },
+    {
+      "action": "extract",
+      "selector_type": "css_selector",
+      "selector_value": "span.a-price-whole",
+      "description": "Extraer la parte entera del precio del producto"
+    },
+    {
+      "action": "extract",
+      "selector_type": "css_selector",
+      "selector_value": "span.a-price-fraction",
+      "description": "Extraer la parte fraccionaria del precio del producto"
+    },
+    {
+      "action": "save_to_file",
+      "file_type": "excel",
+      "file_name": "amazon_products.xlsx",
+      "description": "Guardar los datos extraídos en un archivo Excel"
+    }
+  ]
+}

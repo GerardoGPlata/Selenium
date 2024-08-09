@@ -1,0 +1,69 @@
+{
+  "url": "https://www.cyberpuerta.mx/",
+  "actions": [
+    {
+      "action": "open_page",
+      "url": "https://www.cyberpuerta.mx/",
+      "description": "Abrir la página principal de CyberPuerta"
+    },
+    {
+      "action": "input",
+      "selector_type": "name",
+      "selector_value": "searchparam",
+      "input_value": "tarjeta de video",
+      "description": "Buscar 'tarjeta de video' en el campo de búsqueda"
+    },
+    {
+      "action": "click",
+      "selector_type": "class_name",
+      "selector_value": "submitButton",
+      "description": "Hacer clic en el botón de búsqueda"
+    },
+    {
+      "action": "wait",
+      "wait_time": 3,
+      "description": "Esperar 3 segundos para que se carguen los resultados"
+    },
+    {
+      "action": "click",
+      "selector_type": "xpath",
+      "selector_value": "//input[@data-cp-seo-val='Oferta']",
+      "description": "Hacer clic en el checkbox de ofertas"
+    },
+    {
+      "action": "wait",
+      "wait_time": 3,
+      "description": "Esperar 3 segundos para aplicar el filtro de ofertas"
+    },
+    {
+      "action": "extract",
+      "selector_type": "id",
+      "selector_value": "productList",
+      "description": "Obtener la lista de productos"
+    },
+    {
+      "action": "extract_all",
+      "selector_type": "class_name",
+      "selector_value": "productData",
+      "description": "Extraer todos los elementos de producto"
+    },
+    {
+      "action": "extract",
+      "selector_type": "class_name",
+      "selector_value": "emproduct_right_title",
+      "description": "Extraer el enlace del producto para obtener el título"
+    },
+    {
+      "action": "extract",
+      "selector_type": "class_name",
+      "selector_value": "price",
+      "description": "Extraer el precio del producto"
+    },
+    {
+      "action": "save_to_file",
+      "file_type": "excel",
+      "file_name": "cyberpuerta_products.xlsx",
+      "description": "Guardar los datos extraídos en un archivo Excel"
+    }
+  ]
+}
